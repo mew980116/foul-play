@@ -1,0 +1,16 @@
+{
+  "python": "Python 3.11.9",
+  "foulPlayUpstream": "D:\\Other\\ai\\foul-play",
+  "integrationHead": "201a8e08cc76bfe49825e4732001f0408288a13c",
+  "foulPlayLabBranch": "codex/dual-view-foul-play",
+  "foulPlayUpstreamCommit": "5bd041d62a6f4c8587699a598a9a92407383e4f3",
+  "psSimCommit": "a5df8274e85b0889bf2a9b3422a08b39732374fc",
+  "createdAt": "2026-10-03",
+  "node": "v24.18.0",
+  "pokeEngine": "D:\\Other\\ai\\poke-engine",
+  "integrationRepository": "D:\\Other\\ai\\pokemon-battle-ai",
+  "foulPlayLabCommit": "5bd041d62a6f4c8587699a598a9a92407383e4f3",
+  "psSim": "D:\\Other\\ai\\ps-sim",
+  "pokeEngineCommit": "7126ba7ba9029f24cbddefdd6e9dc6193ee72d33",
+  "foulPlayLab": "D:\\Other\\ai\\foul-play-lab"
+}

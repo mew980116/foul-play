@@ -13,3 +13,17 @@ teams/teams
 data/smogon_stats_cache
 data/pkmn_sets_cache
 data/local_data
+
+# Local lab artifacts
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+*.pyc
+*.log
+logs/
+replays/
+experiments/
+target/
+.env

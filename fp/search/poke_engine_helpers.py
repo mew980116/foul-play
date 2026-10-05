@@ -51,20 +51,20 @@ def pokemon_to_poke_engine_pkmn(pkmn: Pokemon):
         base_types = (base_types[0], "typeless")
     if len(pkmn.types) == 1:
         pkmn.types = (pkmn.types[0], "typeless")
-    num_moves = len(pkmn.moves)
-    if num_moves > 4:
+    engine_moves = pkmn.moves[:4]
+    if len(pkmn.moves) > 4:
         logger.warning(
             "More than 4 moves on pokemon: {} moves: {}".format(
                 pkmn.name, [m.name for m in pkmn.moves]
             )
         )
         logger.warning("Truncating moves to first 4")
-        pkmn.moves = pkmn.moves[:4]
 
     pkmn_moves = [
         PokeEngineMove(id=str(m.name), disabled=m.disabled, pp=m.current_pp)
-        for m in pkmn.moves
+        for m in engine_moves
     ]
+    num_moves = len(pkmn_moves)
     while num_moves < 4:
         pkmn_moves.append(PokeEngineMove(id="none", disabled=True, pp=0))
         num_moves += 1
@@ -112,13 +112,23 @@ def battler_to_poke_engine_side(
     if battler.last_used_move.move.startswith("switch "):
         last_used_move = "switch:0"
     elif battler.last_used_move.move:
-        pkmn_moves = [m.name for m in battler.active.moves]
+        # poke-engine 只接受四个 move 槽位；隐藏的第五个及之后的招式
+        # 不能映射成有效的 last_used_move 索引。
+        pkmn_moves = [m.name for m in battler.active.moves[:4]]
         for i, move in enumerate(pkmn_moves):
             if move == battler.last_used_move.move:
                 last_used_move = "move:{}".format(i)
                 break
         else:
-            last_used_move = "move:0"
+            last_used_move = "move:none"
+
+    if "encore" in battler.active.volatile_statuses and (
+        last_used_move == "move:none" or not last_used_move.startswith("move:")
+    ):
+        raise ValueError(
+            "engine-input-invalid: Encore requires a known last move in the "
+            f"active move slots ({battler.active.name})"
+        )
 
     # substitute health can't be known with certainty but the client can keep track of if the substitute was hit
     # to approximate: the substitute health is 1/10 of the pokemon's max_hp if it was hit, 1/4 if it wasn't

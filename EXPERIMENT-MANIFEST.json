@@ -9,8 +9,433 @@
   "node": "v24.18.0",
   "pokeEngine": "D:\\Other\\ai\\poke-engine",
   "integrationRepository": "D:\\Other\\ai\\pokemon-battle-ai",
-  "foulPlayLabCommit": "5bd041d62a6f4c8587699a598a9a92407383e4f3",
+  "foulPlayLabCommit": "552070acd9f4671f4f9cdce478f966c23a1d415d",
   "psSim": "D:\\Other\\ai\\ps-sim",
   "pokeEngineCommit": "7126ba7ba9029f24cbddefdd6e9dc6193ee72d33",
-  "foulPlayLab": "D:\\Other\\ai\\foul-play-lab"
+  "foulPlayLab": "D:\\Other\\ai\\foul-play-lab",
+  "taskStatus": {
+    "repositoryAudit": "complete",
+    "protocolReplay": "complete",
+    "dualViewState": "complete",
+    "visibilityTests": "complete",
+    "gen9RandomBattleBeliefSampler": "complete",
+    "consistencyFiltering": "initial-complete",
+    "offlinePolicyOracle": "complete",
+    "shadowPrediction": "initial-complete",
+    "rootActionReweighting": "initial-complete",
+    "replayDecisionObserver": "initial-complete",
+    "liveShadowObserver": "live-validated",
+    "onlineDualViewRootReweighting": "initial-live-complete",
+    "onlineWinRateValidation": "not-started",
+    "stateSyncFreezeCandidate": "withdrawn-engine-boundary-bugs; v0.4.1-offline-candidate",
+    "rootReweightingAblation": "completed-strength-1-vs-strength-0-fixed"
+  },
+  "beliefSampler": {
+    "module": "fp/belief_sampler.py",
+    "format": "gen9randombattle",
+    "datasetSource": "foul-play-lab/data/pkmn_sets_cache/gen9randombattle.json",
+    "particleCountPolicy": "caller-selected",
+    "seeded": true,
+    "jointPosterior": false,
+    "historicalConsistencyFiltering": true,
+    "consistencyScope": [
+      "species",
+      "moves",
+      "item",
+      "ability",
+      "teraType",
+      "publicMoveHistory"
+    ]
+  },
+  "policyOracle": {
+    "module": "fp/policy_oracle.py",
+    "perspectives": [
+      "self",
+      "opponent"
+    ],
+    "usesPokeEngineMcts": true,
+    "mutatesInputBattle": false,
+    "onlinePathIntegrated": false
+  },
+  "shadowPrediction": {
+    "module": "fp/shadow_prediction.py",
+    "aggregation": "particle-weighted-action-distribution",
+    "usesOpponentPerspectiveOracle": true,
+    "secondOrderMcts": false,
+    "onlinePathIntegrated": false
+  },
+  "rootActionReweighting": {
+    "module": "fp/root_reweighting.py",
+    "valueSource": "caller-provided-action-pair-evaluator",
+    "aggregation": "softmax-prior-plus-expected-value",
+    "onlinePathIntegrated": true,
+    "secondOrderMcts": false
+  },
+  "replayDecisionObserver": {
+    "module": "tools/replay_observer.py",
+    "input": "pokemon-battle-ai/platform/ps/benchmark/results/matches.jsonl",
+    "mode": "public-replay-plus-sampled-configurations",
+    "actualPrivateRequestPreserved": false,
+    "onlinePathIntegrated": false
+  },
+  "liveShadowObserver": {
+    "module": "pokemon-battle-ai/platform/ps/live-observer.js",
+    "referenceModule": "fp/live_reference.py",
+    "mode": "new-model-action-plus-local-foul-play-reference",
+    "announceDefault": "none",
+    "announceSupported": [
+      "none",
+      "all",
+      "diff-only"
+    ],
+    "referenceIsShadowOnly": true,
+    "stateLogSanitized": true,
+    "privateServerMatchSetupConfirmed": true,
+    "completedLiveComparisonMatch": true,
+    "completedLiveComparisonMatches": 20,
+    "completedLiveComparisonDirectory": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\live-audit-20-20261004",
+    "lastSmokeTest": {
+      "date": "2026-10-03",
+      "format": "gen9randombattle",
+      "room": "battle-gen9randombattle-748",
+      "result": "completed",
+      "matches": 20,
+      "wins": 4,
+      "losses": 16,
+      "referenceErrors": 0,
+      "invalidActions": 0,
+      "ordinaryDecisionAgreement": "60.29%",
+      "referenceFixVerifiedAgainstCapturedLiveState": true
+    }
+  },
+  "onlineDualViewRootReweighting": {
+    "module": "tools/dual_view_server.py",
+    "endpoint": "http://127.0.0.1:8094/choice",
+    "providerName": "dual-view",
+    "actualActionPathIntegrated": true,
+    "usesOpponentBeliefSampler": true,
+    "usesOpponentPerspectiveOracle": true,
+    "usesSelfPerspectiveOracle": true,
+    "secondOrderMcts": false,
+    "actionValue": "initial-heuristic-setup-risk",
+    "lastSmokeTest": {
+      "date": "2026-10-03",
+      "format": "gen9randombattle",
+      "room": "battle-gen9randombattle-758",
+      "result": "loss",
+      "turns": 41,
+      "decisionCount": 46,
+      "fallbackCount": 0,
+      "invalidActionCount": 0,
+      "decisionLatencyP50Ms": 49,
+      "decisionLatencyP95Ms": 60,
+      "referenceErrors": 0,
+      "sameDecisionCount": 12,
+      "differentDecisionCount": 34
+    }
+  },
+  "liveAudit20": {
+    "directory": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\live-audit-20-20261004",
+    "matches": 20,
+    "wins": 4,
+    "losses": 16,
+    "averageTurns": 24.3,
+    "decisionCount": 588,
+    "referenceErrors": 0,
+    "invalidActions": 0,
+    "ordinaryDecisionAgreement": {
+      "same": 293,
+      "different": 193,
+      "eligible": 486,
+      "rate": 0.6029
+    },
+    "teraStats": {
+      "selfAverageUses": 0.75,
+      "selfUsedGames": 15,
+      "selfUsageRate": 0.75,
+      "selfFirstTeraTurnAverage": 10.13,
+      "selfFirstTeraTurnQuantiles": {
+        "p25": 4,
+        "median": 7,
+        "p75": 17
+      },
+      "opponentAverageUses": 0.9,
+      "opponentUsedGames": 18,
+      "opponentUsageRate": 0.9,
+      "opponentFirstTeraTurnAverage": 11.61
+    },
+    "policyPerformanceFreeze": false
+  },
+  "referenceCalibration20": {
+    "directory": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\upstream-20261005-120432",
+    "date": "2026-10-05",
+    "format": "gen9randombattle",
+    "referenceContractVersion": "reference-contract/v0.1",
+    "translationVersion": "ps-adapter-state-sync/v0.4",
+    "mode": "upstream-compatible",
+    "searchTimeMs": 100,
+    "searchParallelism": 1,
+    "seed": 17,
+    "decisionPoints": 781,
+    "wins": 10,
+    "losses": 10,
+    "referenceErrors": 0,
+    "ordinarySelectionFallbacks": 13,
+    "dynamicWorlds": {
+      "fourWorldDecisionPoints": 66,
+      "twoWorldDecisionPoints": 715
+    },
+    "finalActionAgreement": {
+      "same": 388,
+      "different": 393,
+      "eligible": 781,
+      "rate": 0.4968,
+      "interpretation": "selector calibration result, not translation pass rate"
+    },
+    "earlyDynamicSamplingAgreement": {
+      "same": 44,
+      "different": 22,
+      "eligible": 66,
+      "rate": 0.6667
+    },
+    "ordinarySamplingAgreement": {
+      "same": 344,
+      "different": 371,
+      "eligible": 715,
+      "rate": 0.4811
+    },
+    "translationParity": {
+      "translationDifferences": {
+        "side-condition-auroraveil-timing": 3
+      },
+      "baselineSummaryDifferences": {
+        "baseline-public-hooh-hp": 1,
+        "baseline-public-cyclizar-hp": 7
+      },
+      "unexplainedDecisionRelevantDifferences": 0,
+      "scope": "historical-summary-only; did not validate actual engine fields",
+      "releaseGateInterpretation": "withdrawn after engine-boundary bugs confirmed"
+    },
+    "policyPerformanceFreeze": false
+  },
+  "referenceExecutionCalibration20": {
+    "directory": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\reference-8093-20-20261005",
+    "date": "2026-10-05",
+    "format": "gen9randombattle",
+    "provider": "foul-play",
+    "decisionUrl": "http://127.0.0.1:8093/choice",
+    "opponent": "foulplaybot",
+    "matches": 20,
+    "wins": 3,
+    "losses": 17,
+    "winRate": 0.15,
+    "decisionCount": 703,
+    "invalidActions": 0,
+    "actionSelectionProjections": 48,
+    "selectionProjectionReason": "raw-best-action-not-legal",
+    "serviceFailureCount": 1,
+    "runnerFallbackRecordCount": 2,
+    "serviceFailureCause": "Encore missing valid last move caused Rust panic and HTTP disconnect",
+    "decisionLatencyMs": {
+      "average": 249.16,
+      "p50": 248,
+      "p95": 267,
+      "percentileMethod": "nearest-rank"
+    },
+    "comparisonToExisting8095Calibration": {
+      "8095Directory": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\upstream-20261005-120432",
+      "8095Matches": 20,
+      "8095Wins": 10,
+      "8095Losses": 10,
+      "signal": "negative",
+      "causalConclusion": false,
+      "reason": "independent random battle trajectories"
+    },
+    "performanceFreeze": false
+  },
+  "transitionReplayAudit500": {
+    "input": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\upstream-20261005-120432\\upstream-comparison.jsonl",
+    "report": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\transition-audit-500-20261005.json",
+    "decisionPoints": 500,
+    "outcomeCount": 934,
+    "validOutcomes": 648,
+    "invalidOutcomes": 286,
+    "fallbackRate": 0.3062,
+    "basicActionPairs": 214,
+    "basicActionPairFallbacks": 0,
+    "exceptions": 0,
+    "hiddenInformationLeaks": 0,
+    "transitionLatencyP50Ms": 1.285,
+    "transitionLatencyP95Ms": 6.348,
+    "basicGatePass": false,
+    "rolloutReady": false,
+    "status": "prior-basic-gate-withdrawn; approximate-preview-only",
+    "rulesFidelityVerified": false,
+    "visibilityProbeScope": "old finite item/ability/move probe, not complete leakage validation",
+    "resultArtifactPreserved": true
+  },
+  "referenceContract": {
+    "schemaVersion": "foul-play-reference/v1",
+    "referenceContractVersion": "reference-contract/v0.1",
+    "translationVersion": "ps-adapter-state-sync/v0.4.1",
+    "deployed8093TranslationVersion": "ps-adapter-state-sync/v0.4",
+    "8093Role": "translated-foul-play-reference-shadow",
+    "8095Role": "untouched-upstream-foul-play-actual-control",
+    "8094StrengthZeroRole": "dual-control-shared-reference-policy",
+    "status": "candidate-not-deployed; freeze-withdrawn; active-Transform-blocker"
+  },
+  "referencePostfixAudit": {
+    "date": "2026-10-05",
+    "pythonTests": "625 passed",
+    "ruff": "passed",
+    "oldSampleReport": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\engine-input-postfix-old-20261005-145507.json",
+    "oldSampleStates": 781,
+    "oldSampleSelectedFieldDifferences": 0,
+    "newSampleReport": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\engine-input-postfix-new-20261005-145526.json",
+    "newSampleStates": 697,
+    "newSampleSupportedStates": 691,
+    "newSampleUnsupportedTransformStates": 6,
+    "newSampleSelectedFieldDifferences": 0,
+    "scope": "private stats/HP/Tera-history; active five-stat boosts; opponent public HP",
+    "fullEngineParityVerified": false,
+    "offlinePolicyReport": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\reference-policy-postfix-20261005-145653.json",
+    "offlinePolicyAttempted": 100,
+    "offlinePolicySuccessful": 99,
+    "offlinePolicyUnsupportedTransform": 1,
+    "offlinePolicyActionProjections": 0,
+    "offlinePolicyInputMutations": 0,
+    "livePostfixSmokeCompleted": false,
+    "deploymentBlocker": "execution policy rejected process stop/start; ports 8093/8094 still old; 8096 not started",
+    "performanceFreeze": false
+  },
+  "referencePerformanceControl20": {
+    "directory": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\reference-performance-control-20261005\\upstream-20261005-142639",
+    "summary": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\reference-performance-summary-1791183260072.json",
+    "matches": 20,
+    "wins": 11,
+    "losses": 9,
+    "searchTimeMs": 100,
+    "searchParallelism": 1,
+    "settleMs": 10000,
+    "decisionPoints": 697,
+    "oldReferenceSame": 341,
+    "oldReferenceDifferent": 356,
+    "oldReferenceErrors": 0,
+    "pairedWith8093Batch": false,
+    "candidateFixesLoaded": false
+  },
+  "rootReweightingAblation": {
+    "comparisonFile": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\ablation-comparison-20261004.json",
+    "strength1Directory": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\live-audit-20-20261004",
+    "strength0Directory": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\ablation-strength-0-postfix-20261004",
+    "strength0PostFixDirectory": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\ablation-strength-0-postfix-20261004",
+    "strength0FailedPreFixDirectory": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\ablation-strength-0-20261004",
+    "strength0IntermediateDirectory": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\ablation-strength-0-fixed-20261004",
+    "weatherTurnsNullBug": {
+      "status": "fixed",
+      "symptom": "weatherState.turnsRemaining=null caused poke-engine binding TypeError",
+      "regressionTests": "tests/test_live_reference.py",
+      "targetedTests": "32 passed",
+      "postFixSmoke": {
+        "completed": 1,
+        "fallbackCount": 0,
+        "invalidActionCount": 0
+      },
+      "moveSlotOverflow": {
+        "status": "fixed",
+        "symptom": "more than four moves plus stale last-used move caused Invalid PokemonMoveIndex",
+        "regressionTests": "tests/test_live_reference.py",
+        "postFixBatchErrors": 0,
+        "postFixBatchFallbacks": 0
+      }
+    },
+    "strength1": {
+      "matches": 20,
+      "wins": 4,
+      "losses": 16,
+      "winRate": 0.2,
+      "averageTurns": 24.3,
+      "normalAgreement": 0.6028806584,
+      "selfAverageFinalAlive": 0.3,
+      "selfAverageNonInitialSwitches": 9.3,
+      "selfAverageAttackMoves": 11.35,
+      "selfAverageTeraUses": 0.75,
+      "selfFirstTeraTurnAverage": 10.13,
+      "opponentPredictionTop1": 0.3240343348,
+      "opponentPredictionTop3": 0.6201716738
+    },
+    "strength0": {
+      "matches": 20,
+      "wins": 2,
+      "losses": 18,
+      "winRate": 0.1,
+      "averageTurns": 27.1,
+      "normalAgreement": 0.6291512915,
+      "selfAverageFinalAlive": 0.3,
+      "selfAverageNonInitialSwitches": 6.8,
+      "selfAverageAttackMoves": 11.85,
+      "selfAverageTeraUses": 0.85,
+      "selfFirstTeraTurnAverage": 14.71,
+      "opponentPredictionTop1": 0.3320158103,
+      "opponentPredictionTop3": 0.6245059289,
+      "fallbackCount": 0,
+      "invalidActionCount": 0,
+      "referenceErrors": 0,
+      "postFix": true
+    },
+    "policyPerformanceFreeze": false
+  },
+  "localFoulPlayControl20": {
+    "directory": "D:\\Other\\ai\\pokemon-battle-experiments\\dual-view-v0\\baseline-foul-play-20-20261004",
+    "format": "gen9randombattle",
+    "opponent": "foulplaybot",
+    "matches": 20,
+    "wins": 0,
+    "losses": 20,
+    "winRate": 0.0,
+    "averageTurns": 20.1,
+    "decisionCount": 503,
+    "decisionLatencyMs": {
+      "average": 86.45,
+      "p50": 84,
+      "p95": 107,
+      "max": 335
+    },
+    "selfAverageNonInitialSwitches": 16.35,
+    "selfAverageAttackMoves": 4.3,
+    "remoteBotPerformanceEquivalent": false,
+    "calibrationRequired": true
+  },
+  "freezeCandidate": {
+    "version": "v0.3-state-sync",
+    "date": "2026-10-04",
+    "scope": [
+      "gen9randombattle",
+      "active-form-mapping",
+      "private-team-state-sync",
+      "boost-sync",
+      "opponent-shadow-prediction",
+      "initial-static-root-reweighting"
+    ],
+    "pythonTests": "574 passed",
+    "ruff": "passed",
+    "savedDecisionStateAudit": {
+      "records": 2621,
+      "activeMappingMismatches": 0,
+      "boostMismatches": 0,
+      "conversionErrors": 0
+    },
+    "savedBattleEntryContract": {
+      "battles": 100,
+      "referenceErrors": 0,
+      "dualViewErrors": 0,
+      "staleGarganaclPredictions": 0,
+      "invalidSelectedActions": 0
+    },
+    "ordinaryFallbacks": "not observed in 100-battle entry contract",
+    "forcedSwitchFallbacks": "present in stale transition records; tracked separately",
+    "performanceValidation": "not-started",
+    "liveMatchValidation": "completed-infrastructure-audit-only",
+    "policyPerformanceFreeze": false
+  }
 }
